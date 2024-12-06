@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ekranı</title>
+    <style>
+        p{
+            font-size: 20px;
+            border: 3px solid rgb(0, 0, 0);
+            border-radius: 10px;
+            background-color: rgb(207, 204, 204);
+            padding:10px;
+        }
+
+        button{
+            transform: skew(-15deg);
+            border:2px solid rgb(35, 34, 48);
+            background-color: rgb(28, 161, 161);
+            box-shadow: 2px 2px 4px black;
+            width: 180px;
+            height: 40px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        button:hover{
+            transform: scale(1.2,1.2);
+        }
+
+        button:focus{
+            background-color:rgb(92, 203, 203);
+        }
+    </style>
+    <script>
+        var stopButton=document.createElement('button');
+        stopButton.style.marginLeft='45%';
+        stopButton.onclick=Stop();
+        var stopButtonText=document.createTextNode('Durdur');
+        stopButton.appendChild(stopButtonText);
+
+        var finishRecordButton=document.createElement('button');
+        finishRecordButton.style.marginLeft='45%';
+        finishRecordButton.onclick=FinishRecord();
+        var finishRecordButtonText=document.createTextNode('Kaydı Tamamla');
+        finishRecordButton.appendChild(finishRecordButtonText);
+
+        var content=document.getElementsByTagName('div');
+        var currentButtons=document.getElementsByTagName("button");
+
+        function Start(){
+            fetch('http://localhost:5214/api/audio/start',{method:'POST',})
+            while(currentButtons[0]){
+                currentButtons[0].parentNode.removeChild(currentButtons[0]);
+            }
+            content[1].appendChild(stopButton);
+        }
+
+        function NewRecord(){
+            fetch('http://localhost:5214/api/audio/start',{method:'POST',})
+            while(currentButtons[0]){
+                currentButtons[0].parentNode.removeChild(currentButtons[0]);
+            }
+            content[1].appendChild(finishRecordButton);
+        }
+
+        function Stop(){
+            fetch('http://localhost:5214/api/audio/stop',{method:'POST',})
+        }
+
+        function FinishRecord(){
+            fetch('http://localhost:5214/api/audio/stop',{method:'POST',})
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <p><b>Nasıl Kullanılır:</b> Uygulamayı kullanmak için öncelikle ses kaydı oluşturmanız gerekir. 
+        Kayıt tuşuna basıp maksimum 3 dakika konuşabilirsiniz, önerilen konuşma süresi 1.5 dakikadır. 
+        İstediğiniz zaman kaydı durdurun ve adınızı girip kaydınızı oluşturun.<br>
+        &nbsp; Daha önceden kaydınız varsa başla tuşuna basıp istediğiniz kadar (önerilen 1.5 dk) konuşun. 
+        Sonra durdur tuşuna basarak sonuçları alabilirsiniz. </p>
+        <br>
+        <button style="margin-left: 34%;" onclick="Start()" >Başla</button>
+        <button style="margin-left: 2%;" onclick="NewRecord()">&nbsp; Yeni Kayıt</button>
+    </div>
+</body>
+</html>
