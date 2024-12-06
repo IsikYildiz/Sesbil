@@ -13,7 +13,6 @@
 
 obj/
 bin/
-Sesbil.sln
 appsettings.json
 .vscode/
 launch.json
