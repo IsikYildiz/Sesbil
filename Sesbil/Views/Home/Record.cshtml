@@ -35,58 +35,137 @@
         button:focus{
             background-color:rgb(91, 203, 203);
         }
+
+        .textField{
+            padding: 8px;
+            border: 2px solid rgb(35, 34, 48);
+            border-radius: 8px;
+            font-size: 18px;
+            width: 64px;
+            box-shadow: 2px 2px 4px black;
+            margin-left: 2%;
+        }
     </style>
     <script>
         var stopButton=document.createElement('button');
         stopButton.style.marginLeft='45%';
-        stopButton.onclick=Stop();
+        stopButton.onclick=stopRecording;
         var stopButtonText=document.createTextNode('Durdur');
         stopButton.appendChild(stopButtonText);
 
         var finishRecordButton=document.createElement('button');
         finishRecordButton.style.marginLeft='45%';
-        finishRecordButton.onclick=FinishRecord();
+        finishRecordButton.onclick=stopRecording;
         var finishRecordButtonText=document.createTextNode('Kaydı Tamamla');
         finishRecordButton.appendChild(finishRecordButtonText);
+
+        var nickname=document.createElement("input");
+        nickname.style.marginLeft='30%';
+        nickname.type="text";
+        nickname.placeholder="İsminizi giriniz";
+        nickname.name="fullName";
+
+        var sendButton=document.createElement("button");
+        sendButton.className="textField";
+        var sendButtonText=document.createTextNode('Gönder');
+        sendButton.appendChild(sendButtonText);
+
 
         var content=document.getElementsByTagName('div');
         var currentButtons=document.getElementsByTagName("button");
 
-        function Start(){
-            fetch('http://localhost:5214/api/audio/start',{method:'POST',})
-            while(currentButtons[0]){
-                currentButtons[0].parentNode.removeChild(currentButtons[0]);
+        let socket;
+        const histogramImage = document.getElementById("histogram");
+
+        async function startRecording() {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                console.warn("WebSocket already open.");
+                return;
             }
-            content[1].appendChild(stopButton);
-        }
-
-        function NewRecord(){
-            fetch('http://localhost:5214/api/audio/start',{method:'POST',})
             while(currentButtons[0]){
-                currentButtons[0].parentNode.removeChild(currentButtons[0]);
+                currentButtons[0].remove();
             }
-            content[1].appendChild(finishRecordButton);
+            document.querySelector(".container").appendChild(stopButton);
+
+            await fetch('/api/recording/start', { method: 'POST' });
+
+            // WebSocket bağlantısını başlat
+            socket = new WebSocket("ws://127.0.0.1:8000/ws/histogram");
+
+            socket.onmessage = function (event) {
+                const blob = new Blob([event.data], { type: 'image/png' });
+                const url = URL.createObjectURL(blob);
+                histogramImage.src = url;
+                document.getElementById("histogram").style.display="block";
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket kapandı.");
+            };
         }
 
-        function Stop(){
-            fetch('http://localhost:5214/api/audio/stop',{method:'POST',})
+        async function newRecording() {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                console.warn("WebSocket already open.");
+                return;
+            }
+            while(currentButtons[0]){
+                currentButtons[0].remove();
+            }
+            document.querySelector(".container").appendChild(finishRecordButton);
+
+            await fetch('/api/recording/start', { method: 'POST' });
+
+            // WebSocket bağlantısını başlat
+            socket = new WebSocket("ws://127.0.0.1:8000/ws/histogram");
+
+            socket.onmessage = function (event) {
+                const blob = new Blob([event.data], { type: 'image/png' });
+                console.log(`Received histogram of size: ${event.data.size} bytes`);
+                const url = URL.createObjectURL(blob);
+                histogramImage.src = url;
+                document.getElementById("histogram").style.display="block";
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket kapandı.");
+            };
         }
 
-        function FinishRecord(){
-            fetch('http://localhost:5214/api/audio/stop',{method:'POST',})
+        async function stopRecording() {
+            while(currentButtons[0]){
+                currentButtons[0].remove();
+            }
+
+            await fetch('/api/recording/stop', { method: 'POST' });
+            socket.close();
+        }
+
+        async function finishRecording(){
+            while(currentButtons[0]){
+                currentButtons[0].remove();
+            }
+            document.querySelector(".container").appendChild(nickname);
+            document.querySelector(".container").appendChild();
+            content.appendChild(nickname);
+            content.appendChild(sendButton);
+
+            await fetch('/api/recording/stop', { method: 'POST' });
+            socket.close();
         }
     </script>
 </head>
 <body>
     <div class="container">
         <p><b>Nasıl Kullanılır:</b> Uygulamayı kullanmak için öncelikle ses kaydı oluşturmanız gerekir. 
-        Kayıt tuşuna basıp maksimum 3 dakika konuşabilirsiniz, önerilen konuşma süresi 1.5 dakikadır. 
+        Kayıt tuşuna basıp konuşabilirsiniz, önerilen konuşma süresi 1.5 dakikadır. 
         İstediğiniz zaman kaydı durdurun ve adınızı girip kaydınızı oluşturun.<br>
         &nbsp; Daha önceden kaydınız varsa başla tuşuna basıp istediğiniz kadar (önerilen 1.5 dk) konuşun. 
         Sonra durdur tuşuna basarak sonuçları alabilirsiniz. </p>
         <br>
-        <button style="margin-left: 34%;" onclick="Start()" >Başla</button>
-        <button style="margin-left: 2%;" onclick="NewRecord()">&nbsp; Yeni Kayıt</button>
+        <img id="histogram" alt="Histogran Görüntüsü" style="display: none;">
+        <button style="margin-left: 34%;" onclick="startRecording()">Başla</button>
+        <button style="margin-left: 2%;" onclick="newRecording()">&nbsp; Yeni Kayıt</button>
     </div>
 </body>
 </html>
