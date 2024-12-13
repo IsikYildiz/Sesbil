@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 
 
 namespace AuidoRecordingAPI.Controllers{
-    [Route ("api/[Controller]")]
+    [Route ("api/recording")]
     [ApiController]
 
-    class RecordingController : ControllerBase{
+    public class RecordingController : ControllerBase{
         private readonly HttpClient _httpClient;
 
         public RecordingController(HttpClient httpClient)

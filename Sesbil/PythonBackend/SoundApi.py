@@ -5,12 +5,23 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import threading
 import asyncio 
+from scipy.signal import spectrogram
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 is_recording = False
 audio_data = []
 clients = set()
+RATE = 44100
 
 lock = threading.Lock()
 stop_event = threading.Event()
@@ -21,7 +32,6 @@ def record_audio():
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
-    RATE = 44100
 
     p = pyaudio.PyAudio()
     stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
@@ -30,7 +40,6 @@ def record_audio():
         while is_recording:
             data = stream.read(CHUNK)
             audio_data.extend(np.frombuffer(data, dtype=np.int16))
-            print(f"Captured {len(data)} bytes of audio.")
     finally:
         stream.stop_stream()
         stream.close()
@@ -54,10 +63,13 @@ async def start_recording():
 async def stop_recording():
     global is_recording
 
-    if not is_recording:
-        return {"message": "Kayıt zaten durdurulmuş durumda."}
+    with lock:
+        if not is_recording:
+            return {"message": "Kayıt zaten durdurulmuş durumda."}
 
-    is_recording = False
+        is_recording = False
+        print("Recording stopped.")
+        
     stop_event.set()
     return {"message": "Ses kaydı durduruldu"}
 
@@ -68,16 +80,15 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            if not is_recording:
-                await asyncio.sleep(0.1)  # WebSocket bağlantısının direkt olarak sonlanmasını önlüyor.
-                continue
 
             histogram = create_histogram()
             if histogram:
                 await websocket.send_bytes(histogram)
                 print("Histogram sent to client.")
-            else:
-                print("No histogram to send.")    
+                if not is_recording:
+                    break
+                
+            await asyncio.sleep(1)
     except WebSocketDisconnect:
         clients.remove(websocket)
     finally:
@@ -87,18 +98,33 @@ def create_histogram():
     global audio_data
 
     if not audio_data:
-        print("No audio data available for histogram.")
         return b""
 
-    plt.figure(figsize=(5, 3))
-    plt.hist(audio_data, bins=50, color='blue', alpha=0.7)
-    plt.title("Ses Verisi Histogramı")
-    plt.xlabel("Genişlik")
-    plt.ylabel("Frekans")
+    #Ses verisi spektogramı yapmak için numpy dizisine dönüştürülüyor.
+    audio_datanp = np.array(audio_data)
+    
+    #Spektogram oluşturma
+    frequencies, times, Sxx = spectrogram(audio_datanp, fs=RATE)
+    plt.figure(figsize=(10, 5), facecolor=(0.1686, 0.6745, 0.7882))
+
+    #Dalga Formu
+    plt.subplot(2, 1, 1)
+    time_axis = np.linspace(0, len(audio_datanp) / RATE, len(audio_datanp))
+    plt.plot(time_axis, audio_datanp, color='blue')
+    plt.title("Data Flow (Waveform)")
+    plt.xlabel("Zaman (s)")
+    plt.ylabel("Amplitüd")
+
+    #spektogram tanımlama
+    plt.subplot(2, 1, 2)
+    plt.pcolormesh(times, frequencies, 10 * np.log10(Sxx), shading='gouraud', cmap='viridis')
+    plt.colorbar(label="Güç (dB)")
+    plt.xlabel("Zaman (s)")
+    plt.ylabel("Frekans (Hz)")
+    plt.tight_layout()
 
     buffer = BytesIO()
-    plt.savefig(buffer, format='png')
+    plt.savefig(buffer, format='png',bbox_inches='tight')
     plt.close()
     buffer.seek(0)
-    print("Histogram successfully created.") 
     return buffer.getvalue()
