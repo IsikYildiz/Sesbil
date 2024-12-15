@@ -77,6 +77,10 @@
         var sendButtonText=document.createTextNode('Gönder');
         sendButton.appendChild(sendButtonText);
 
+        var speechText=document.createElement("p");
+        var speechSubject=document.createElement("p");
+
+        var space=document.createElement("br");
 
         var content=document.getElementsByTagName('div');
         var currentButtons=document.getElementsByTagName("button");
@@ -105,6 +109,8 @@
                 document.getElementById("histogram").src = url;
             };
 
+            setTimeout(timer,150000);
+
             socket.onclose = function () {
                 console.log("WebSocket kapandı.");
             };
@@ -132,6 +138,8 @@
                 document.getElementById("histogram").src = url;
             };
 
+            setTimeout(timer,150000);
+
             socket.onclose = function () {
                 console.log("WebSocket kapandı.");
             };
@@ -143,6 +151,25 @@
             }
 
             await fetch('/api/recording/stop', { method: 'POST' });
+            socket.close();
+
+            socket = new WebSocket("ws://127.0.0.1:8000/ws/information");
+
+            socket.onmessage = async function (event) {
+                var message=event.data;
+                console.log(message)    
+                if(message.includes("ilk mesaj")){
+                    message = message.substring("İlk mesaj".length);
+                    speechText.textContent = 'Konuşmanız: "' + message+'"';
+                    document.querySelector(".container").appendChild(speechText);
+                }
+                else if (message.includes("ikinci mesaj")){
+                    document.querySelector(".container").appendChild(space);
+                    message = message.substring("ikinci mesaj".length);
+                    speechSubject.textContent='Konuşulan Konu: ' + message;
+                    document.querySelector(".container").appendChild(speechSubject);
+                }
+            };
         }
 
         async function finishRecording(){
@@ -152,7 +179,16 @@
             document.querySelector(".container").appendChild(nickname);
             document.querySelector(".container").appendChild(sendButton);
 
-            await fetch('/api/recording/stop', { method: 'POST' });
+            await fetch('/api/recording/finish', { method: 'POST' });
+        }
+
+        function timer(){
+            if (currentButtons[0]==stopButton){
+                stopRecording();
+            }
+            else if(currentButtons[0]==finishRecordButton){
+                finishRecording();
+            }
         }
     </script>
 </head>

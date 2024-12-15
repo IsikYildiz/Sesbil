@@ -7,6 +7,9 @@ import threading
 import asyncio 
 from scipy.signal import spectrogram
 from fastapi.middleware.cors import CORSMiddleware
+from scipy.io.wavfile import write
+import speech_recognition as sr
+import os
 
 app = FastAPI()
 
@@ -69,6 +72,20 @@ async def stop_recording():
 
         is_recording = False
         print("Recording stopped.")
+
+    stop_event.set()
+    return {"message": "Ses kaydı durduruldu"}
+
+@app.post("/finish-recording")
+async def finish_():
+    global is_recording
+
+    with lock:
+        if not is_recording:
+            return {"message": "Kayıt zaten durdurulmuş durumda."}
+
+        is_recording = False
+        print("Recording stopped.")
         
     stop_event.set()
     return {"message": "Ses kaydı durduruldu"}
@@ -88,11 +105,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 if not is_recording:
                     break
                 
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.001)
     except WebSocketDisconnect:
         clients.remove(websocket)
-    finally:
-        await websocket.close()
 
 def create_histogram():
     global audio_data
@@ -111,7 +126,7 @@ def create_histogram():
     plt.subplot(2, 1, 1)
     time_axis = np.linspace(0, len(audio_datanp) / RATE, len(audio_datanp))
     plt.plot(time_axis, audio_datanp, color='blue')
-    plt.title("Data Flow (Waveform)")
+    plt.title("Dalga Formu")
     plt.xlabel("Zaman (s)")
     plt.ylabel("Amplitüd")
 
@@ -128,3 +143,27 @@ def create_histogram():
     plt.close()
     buffer.seek(0)
     return buffer.getvalue()
+
+# Konuşmayı yazıya çevir
+def speech_to_text(audio_file):
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(audio_file) as source:
+        audio_data = recognizer.record(source)
+        text = recognizer.recognize_google(audio_data, language="tr-TR")  # Türkçe için "tr-TR" kullan
+    return text   
+
+@app.websocket("/ws/information")
+async def send_information(websocket: WebSocket):
+    global audio_data
+
+    await websocket.accept()
+    clients.add(websocket)
+
+    audio_datanp = np.array(audio_data, dtype=np.int16)    
+    write("geçiciDosya.wav", RATE, audio_datanp)
+    speechText="ilk mesaj"+speech_to_text("geçiciDosya.wav")
+    await websocket.send_text(speechText)
+
+    os.remove("geçiciDosya.wav")
+
+
