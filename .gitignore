@@ -16,3 +16,5 @@ bin/
 appsettings.json
 .vscode/
 launch.json
+PythonBackend/Key.py
+PythonBackend/_pycache_
