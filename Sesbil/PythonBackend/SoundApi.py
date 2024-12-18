@@ -32,7 +32,7 @@ stop_event = threading.Event()
 def record_audio():
     global is_recording, audio_data
 
-    CHUNK = 1024
+    CHUNK = 4096
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
 
@@ -132,6 +132,7 @@ def create_histogram():
 
     #spektogram tanımlama
     plt.subplot(2, 1, 2)
+    Sxx[Sxx == 0] = 1e-10
     plt.pcolormesh(times, frequencies, 10 * np.log10(Sxx), shading='gouraud', cmap='viridis')
     plt.colorbar(label="Güç (dB)")
     plt.xlabel("Zaman (s)")
