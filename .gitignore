@@ -18,3 +18,4 @@ appsettings.json
 launch.json
 key.txt
 __pycache__/
+.env
