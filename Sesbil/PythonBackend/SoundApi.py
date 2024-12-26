@@ -100,7 +100,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            histogram = create_histogram()
+            histogram = create_histogram(audio_data)
             if histogram:
                 await websocket.send_bytes(histogram)
                 print("Histogram sent to client.")
@@ -142,10 +142,9 @@ async def websocket_endpoint(websocket: WebSocket):
         clients.remove(websocket)
 
 #Spektogram ve dalga formu oluşturulur
-def create_histogram():
-    global audio_data
+def create_histogram(audio_data):
 
-    if not audio_data:
+    if audio_data==None:
         return b""
 
     #Ses verisi spektogramı yapmak için numpy dizisine dönüştürülüyor

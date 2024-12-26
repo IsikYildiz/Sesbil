@@ -19,3 +19,5 @@ launch.json
 key.txt
 __pycache__/
 .env
+.sonarqube/
+__init__.py
