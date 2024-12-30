@@ -13,7 +13,7 @@
             font-size: 20px;
             border: 3px solid rgb(0, 0, 0);
             border-radius: 10px;
-            background-color: rgb(207, 204, 204);
+            background-color: rgb(160, 152, 152);
             padding:10px;
         }
 
@@ -61,6 +61,7 @@
 
             // WebSocket bağlantısını başlat
             socket = new WebSocket("ws://127.0.0.1:8000/ws/information");
+            document.getElementById("Kılavuz").style.display="hidden";
 
             socket.onmessage = function (event) {
                 var message=event.data;
@@ -90,6 +91,14 @@
                         whom_message="Konuşmacı: " + message;
                         var messageNode=document.createTextNode(whom_message);
                         document.getElementById("Kişi").appendChild(messageNode)
+                    }
+                    else if (message.includes("beşinci mesaj")){
+                        document.getElementById("Konuşanlar").style.display="block";
+                        document.getElementById("Konuşanlar").innerHTML="";
+                        message = message.substring("beşinci mesaj".length);
+                        message="Konuşmacı İstatislikleri: " + message;
+                        var messageNode=document.createTextNode(message);
+                        document.getElementById("Konuşanlar").appendChild(messageNode)
                     }
                 }
                 else if (message instanceof Blob) {
@@ -126,8 +135,13 @@
 </head>
 <body>
     <div class="container">
-        <p><b>Nasıl Kullanılır:</b>Tek yapmanız gereken başla tuşuna basıp konuşmaktır. 
-        Maksimum 3dk konuşabilirsiniz.</p>
+        <p id="Kılavuz"><b>Nasıl Kullanılır:</b>Tek yapmanız gereken başla tuşuna basıp konuşmaktır. 
+        Maksimum 3dk konuşabilirsiniz. Konuştuğunuz süre boyunca kimin konuştuğu tahmin edilecektir.
+        <br>
+        &nbsp;&nbsp;Ses kaydını durdurmak için durdur tuşuna basın ve sessizce bekleyin. 
+        Konuşmanız metne dönüştürülecek, konuşmanın konusu bulunacak ve duygu tahmini yapılacaktır.
+        <br>
+        &nbsp;&nbsp;Eğer konuşmalarınız 25 kelimeden az ise konu belirleme ve duygu tahmini yapılamaz.</p>
         <br>
         <button style="margin-left: 43%;" onclick="startRecording()" id="Başla">Başla</button>
         <br>
@@ -136,6 +150,8 @@
         <button style="margin-left: 43%;display:none;" onclick="stopRecording()" id="Durdur">Durdur</button>
         <br>
         <p style="display: none" id="Kişi"></p>
+        <br>
+        <p style="display: none" id="Konuşanlar"></p>
         <br>
         <p style="display: none" id="Metin">Konuşmanız:&nbsp;</p>
         <br>

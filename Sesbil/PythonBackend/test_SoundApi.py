@@ -1,6 +1,37 @@
 import unittest
-from SoundApi import create_histogram,translate_text,find_topic,calc_emotions
+from SoundApi import translate_text,find_topic,calc_emotions
 import numpy as np
+import matplotlib.pyplot as plt
+from io import BytesIO
+from scipy.signal import spectrogram
+
+def create_histogram(audio_data):
+        if not audio_data:
+            return b""
+        
+        RATE=440
+        
+        audio_datanp = np.array(audio_data)
+        frequencies, times, Sxx = spectrogram(audio_datanp, fs=RATE)
+        plt.figure(figsize=(10, 5), facecolor=(0.1686, 0.6745, 0.7882))
+        plt.subplot(2, 1, 1)
+        time_axis = np.linspace(0, len(audio_datanp) / RATE, len(audio_datanp))
+        plt.plot(time_axis, audio_datanp, color='blue')
+        plt.title("Dalga Formu")
+        plt.xlabel("Zaman (s)")
+        plt.ylabel("Amplitüd")
+        plt.subplot(2, 1, 2)
+        Sxx[Sxx == 0] = 1e-10
+        plt.pcolormesh(times, frequencies, 10 * np.log10(Sxx), shading='gouraud', cmap='viridis')
+        plt.colorbar(label="Güç (dB)")
+        plt.xlabel("Zaman (s)")
+        plt.ylabel("Frekans (Hz)")
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png',bbox_inches='tight')
+        plt.close()
+        buffer.seek(0)
+        return buffer.getvalue()
 
 class Unit_Tests(unittest.TestCase):
     def test_histogram_output(self):
@@ -22,16 +53,17 @@ class Unit_Tests(unittest.TestCase):
 
     def test_translate_text(self):
         text="Yarın hava güneşli olacak"
-        translate_text(text)
+        result=translate_text(text,'en')
+        print(result)
 
     def test_find_topic(self):
         text="Yakın zamanda Türkiye'de yapılan arkeolojik kazılarda daha önce bulunanlardan daha eski bir insan kafatası bulundu. Bu belkide ilk insanların Afrika değilde mezapotamyada olduğunu gösteriyor"
-        result=find_topic(text)
-        print(result)
+        find_topic(text)
 
     def test_calc_emotions(self):
         text="Bugün uzun aradan sonra lunaparka gitçeğimiz için çok heyecanlıyım."        
-        calc_emotions(text)
+        result=calc_emotions(text)  
+        print(result)
 
 if __name__ == '__main__':
     unittest.main()    

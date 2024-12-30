@@ -27,6 +27,7 @@ is_recording = False
 send_name_prediction=False
 audio_data = []
 current_audio_data=[]
+speakers={}
 clients = set()
 RATE = 44100
 
@@ -92,22 +93,30 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     clients.add(websocket)
 
-    global audio_data, current_audio_data, send_name_prediction
+    global audio_data, current_audio_data, send_name_prediction, speakers
 
     encoder=joblib.load("label_encoder.pkl")
     scaler=joblib.load("scaler.pkl")
     model=joblib.load("best_model.joblib")
 
+    start=time.time()
+
     try:
         while True:
-            histogram = create_histogram(audio_data)
-            if histogram:
+            if time.time()-start>0.5:
+                histogram = create_histogram()
                 await websocket.send_bytes(histogram)
                 print("Histogram sent to client.")
+                start=time.time()
 
             if send_name_prediction:
-                name="dördüncü mesaj" + find_talker(current_audio_data,encoder,scaler,model)
+                predicted_name=find_talker(current_audio_data,encoder,scaler,model)
+                name="dördüncü mesaj" + predicted_name
                 await websocket.send_text(name)
+
+                statistics='beşinci mesaj'+speaker_statistic(predicted_name)
+                await websocket.send_text(statistics)
+
                 send_name_prediction=False
 
             if not is_recording:
@@ -133,6 +142,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     os.remove("geçiciDosya.wav")
                     audio_data=[]
                     current_audio_data=[]
+                    speakers=[]
 
                     await websocket.close()
                 break
@@ -142,9 +152,10 @@ async def websocket_endpoint(websocket: WebSocket):
         clients.remove(websocket)
 
 #Spektogram ve dalga formu oluşturulur
-def create_histogram(audio_data):
+def create_histogram():
+    global audio_data
 
-    if audio_data==None:
+    if not audio_data:
         return b""
 
     #Ses verisi spektogramı yapmak için numpy dizisine dönüştürülüyor
@@ -186,29 +197,37 @@ def speech_to_text(audio_file):
         text = recognizer.recognize_google(audio_data, language="tr-TR")  # Türkçe için "tr-TR" kullan
     return text  
 
-#Konu analizi için metni ingilizceye çevirme
-def translate_text(text, target_language="en"):
+#Konu analizi için metni ingilizceye ve türkçeye çevirme
+def translate_text(text, target_language):
     translate_client = translate.Client()
     result = translate_client.translate(text, target_language=target_language)
     return result["translatedText"]
 
 #Konuyu bulma
 def find_topic(text):
-    text=translate_text(text)
+    text=translate_text(text,'en')
     document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
 
     #Konu sınıflandırması yapılır
     response = client.classify_text(document=document)
 
     #Konu kategorileri kaydedilir ve sonra döndürülür
-    konu_kategorileri = []
+    topics = []
     for category in response.categories:
-        konu_kategorileri.append({
-            "Kategori": category.name,
-            "Güven": f"{category.confidence * 100:.2f}%"
-        })
-    
-    return konu_kategorileri
+        topics.append({
+            "Category": category.name,
+            "Trust": f"{category.confidence * 100:.2f}%"
+        }) 
+
+    if topics==[]:
+        return 'Belirli bir kategori bulunamadı'   
+    else: 
+        topics=str(topics)
+        table=dict.fromkeys(map(ord,'{[]}\''),None)
+        topics=topics.translate(table)
+        topics=translate_text(topics,'tr')
+        print(topics)
+        return topics
 
 #Metinden duyguyu analiz etme
 def calc_emotions(text):
@@ -251,6 +270,8 @@ def calc_emotions(text):
 
 #Ses verisi modelden geçirilerek kişi tahmini yapılır
 def find_talker(sound,encoder,scaler,model):
+    if sound==[]:
+        return ''
     audio_datanp = np.array(sound)
     audio_datanp=audio_datanp.astype(np.float32) / np.max(np.abs(audio_datanp))
     mfcc=librosa.feature.mfcc(y=audio_datanp,sr=RATE,n_mfcc=20)
@@ -265,3 +286,21 @@ def find_talker(sound,encoder,scaler,model):
     predicted_name = encoder.inverse_transform([predicted_label])[0]
     
     return predicted_name
+
+def speaker_statistic(name):
+    global speakers
+
+    if name in speakers:
+        speakers[name]+=10
+    else:
+        speakers[name]=10
+
+    speakers_list=[]   
+    for name in speakers:
+        speakers_list.append(name+':'+str(speakers[name])+'s')
+        
+    speakers_str=str(speakers_list)
+    table=dict.fromkeys(map(ord,'{[]}\''),None)
+    speakers_str=speakers_str.translate(table)
+
+    return speakers_str
