@@ -37,7 +37,7 @@ stop_event = threading.Event()
 def record_audio():
     global is_recording, audio_data, current_audio_data,send_name_prediction
 
-    CHUNK = 4096
+    CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
 
@@ -280,15 +280,13 @@ def find_talker(sound,encoder,scaler,model):
         return ''
     audio_datanp = np.array(sound)
     audio_datanp=audio_datanp.astype(np.float32) / np.max(np.abs(audio_datanp))
-    mfcc=librosa.feature.mfcc(y=audio_datanp,sr=RATE,n_mfcc=20)
+    mfcc=librosa.feature.mfcc(y=audio_datanp,sr=RATE,n_mfcc=30)
     mfcc_mean = np.mean(mfcc.T, axis=0)
     features=[]
     features.append(mfcc_mean)
     features_scaled=scaler.transform(features)
-    columns_to_remove = [1, 13]
-    remaining_features = np.delete(features_scaled, columns_to_remove, axis=1)
-    remaining_features_df=pd.DataFrame(remaining_features,columns=["0","2","3","4","5","6","7","8","9","10","11","12","14","15","16","17","18","19"])
-    predicted_label=model.predict(remaining_features_df)[0]
+    features_df=pd.DataFrame(features_scaled,columns=["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29"])
+    predicted_label=model.predict(features_df)[0]
     predicted_name = encoder.inverse_transform([predicted_label])[0]
     
     return predicted_name
