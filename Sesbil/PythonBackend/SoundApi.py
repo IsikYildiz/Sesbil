@@ -93,7 +93,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     clients.add(websocket)
 
-    global audio_data, current_audio_data, send_name_prediction, speakers
+    global audio_data, current_audio_data, send_name_prediction, speakers, is_recording
 
     encoder=joblib.load("label_encoder.pkl")
     scaler=joblib.load("scaler.pkl")
@@ -142,13 +142,19 @@ async def websocket_endpoint(websocket: WebSocket):
                     os.remove("geçiciDosya.wav")
                     audio_data=[]
                     current_audio_data=[]
-                    speakers=[]
+                    speakers={}
 
                     await websocket.close()
                 break
 
             await asyncio.sleep(0.001)
     except WebSocketDisconnect:
+        if os.path.exists("geçiciDosya.wav"):
+            os.remove("geçiciDosya.wav")
+        audio_data=[]
+        current_audio_data=[]
+        speakers={}
+        is_recording=False
         clients.remove(websocket)
 
 #Spektogram ve dalga formu oluşturulur
