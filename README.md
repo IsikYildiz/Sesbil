@@ -10,6 +10,7 @@ Aynı zamanda bu metinden kişilerin duygu durumu tahmin edilir.
 
 Proje Mimarisi ve Kullanılan Teknolojiler:
 
+- Proje yapılırken grupta Mac bilgisayara sahip olanlar olduğu için vscode kullanılmıştır.
 - Projenin ön yüzü .net core çerçevesi ile yapılmıştır.
 - Proje ses kaydı, histogram oluşturma gibi gereksinimleri gerçekleştirmek için python programlama dili kullanılmıştır. Python matplotlib gibi paketleriyle bu gereksinimleri kolayca karşılayabildiği için seçilmiştir.
 - Proje ön ve arka yüzün bağlantısı canlı olarak veri aktarımı için Websocket ile asenkron bir şekilde yapılmıştır.   
