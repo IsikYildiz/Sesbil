@@ -62,3 +62,5 @@
   - Translation API
 - **Machine Learning** (for speaker recognition)
 - **MySQL Database** (stores only file paths of the recordings)
+
+---
