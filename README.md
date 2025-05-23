@@ -1,19 +1,64 @@
-Sesbil - Ses Analiz Yazılımı
+# Sesbil - Ses Analiz Yazılımı / Voice Analysis Software
 
-Proje Ekibi: Işık Yıldız , Hasan Yıldız 
+## Proje Ekibi / Project Team
+**Işık Yıldız**, **Hasan Yıldız**
 
-Sesbil Projesi:
+---
 
-  Sesbil web tabanlı bir ses analiz projesidir. Eğer kullanıcıların proje veritabnında bir ses kaydı varsa, tek yapmaları gereken web sitesinde başlat tuşuna basıp konuşmaya başlamaktır. Kullanıcıların konuşmaları durdur tuşuna basılana kadar, 
-basılmadığı müddetçe 3 dakika kadar kaydedilir. Bu sırada konuşulanların canlı olarak spektogram ve dalga formu grafikleri görülebilir, aynı zamanda konuşan kişi tahmin edilir. Konuşma durdurulduktan sonra, metne dönüştürülür ve konusu bulunur.
-Aynı zamanda bu metinden kişilerin duygu durumu tahmin edilir.
+## 🇹🇷 Türkçe Açıklama
 
-Proje Mimarisi ve Kullanılan Teknolojiler:
+### Proje Özeti
 
-- Proje yapılırken grupta Mac bilgisayara sahip olanlar olduğu için vscode kullanılmıştır.
-- Projenin ön yüzü .net core çerçevesi ile yapılmıştır.
-- Proje ses kaydı, histogram oluşturma gibi gereksinimleri gerçekleştirmek için python programlama dili kullanılmıştır. Python matplotlib gibi paketleriyle bu gereksinimleri kolayca karşılayabildiği için seçilmiştir.
-- Proje ön ve arka yüzün bağlantısı canlı olarak veri aktarımı için Websocket ile asenkron bir şekilde yapılmıştır.   
-- Sesin metne çevrilmesi, duygu durumu tahmini ve metnin konusunun çıkarılması için uygulaması kolay ve düşük maliyetli Google Speech-to-Text,Google Cloud Natural Language ve Transation Apıları kullanılmıştır.
-- Konuşan kişinin tahmin edilmesi için, pythonun makine öğrenimi paketleriyle bir model oluşturulmuştur.
-- Projede MySQL veri tabanı kullanılmıştır. Ses kayıtları ayrı bir dosyada olup veri tabanı sadece o dosyaların yolunu tutmaktadır.
+**Sesbil**, web tabanlı bir ses analiz yazılımıdır. Eğer kullanıcının veritabanında bir ses kaydı varsa, tek yapması gereken web sitesinde "Başlat" tuşuna basıp konuşmaya başlamaktır. Kayıt süresi 3 dakika ile sınırlıdır veya kullanıcı "Durdur" tuşuna basana kadar devam eder.
+
+**Konuşma sırasında:**
+- Gerçek zamanlı **spektrogram** ve **dalga formu grafikleri** gösterilir.
+- **Konuşan kişi tahmin edilir**.
+
+**Konuşma sonrası:**
+- Ses, **metne dönüştürülür**.
+- **Konuşmanın konusu** belirlenir.
+- Metinden **duygu durumu** tahmin edilir.
+
+### Kullanılan Teknolojiler
+
+- **Visual Studio Code** (geliştirme ortamı, Mac uyumu)
+- **.NET Core** (frontend)
+- **Python** (backend, `matplotlib` vb. kütüphaneler)
+- **WebSocket** (gerçek zamanlı ön-arka yüz veri iletimi)
+- **Google API'leri:**
+  - Speech-to-Text
+  - Cloud Natural Language
+  - Translation API
+- **Makine Öğrenimi** (konuşmacı tanıma)
+- **MySQL Veritabanı** (sadece ses dosya yollarını tutar)
+
+---
+
+## 🇬🇧 English Description
+
+### Project Overview
+
+**Sesbil** is a web-based voice analysis software. If the user has a voice record in the database, they simply click the **Start** button on the website and begin speaking. The recording continues for up to 3 minutes or until the **Stop** button is pressed.
+
+**During speech:**
+- **Real-time spectrogram** and **waveform** graphs are displayed.
+- **Speaker identification** is performed live.
+
+**After speech:**
+- The audio is **converted into text**.
+- The **topic** of the conversation is detected.
+- **Sentiment analysis** is performed based on the text.
+
+### Technologies Used
+
+- **Visual Studio Code** (cross-platform, Mac compatible)
+- **.NET Core** (frontend)
+- **Python** (backend with libraries like `matplotlib`)
+- **WebSockets** (real-time communication between frontend and backend)
+- **Google APIs:**
+  - Speech-to-Text
+  - Cloud Natural Language
+  - Translation API
+- **Machine Learning** (for speaker recognition)
+- **MySQL Database** (stores only file paths of the recordings)
