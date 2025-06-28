@@ -21,3 +21,5 @@ __pycache__/
 .env
 .sonarqube/
 __init__.py
+catboost_info/
+geçiciDosya.wav

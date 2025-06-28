@@ -55,12 +55,13 @@
                 return;
             }
             currentButtons[0].remove();
+            currentButtons[0].remove();
             document.getElementById("Durdur").style.display="block";
 
             await fetch('/api/recording/start', { method: 'POST' });
 
             // WebSocket bağlantısını başlat
-            socket = new WebSocket("ws://127.0.0.1:8000/ws/information");
+            socket = new WebSocket("ws://127.0.0.1:8000/information");
             document.getElementById("Kılavuz").style.display="hidden";
 
             socket.onmessage = function (event) {
@@ -130,6 +131,10 @@
 
             await fetch('/api/recording/stop', { method: 'POST' });
         }
+
+        function secondPage(){
+            window.location.href = "/Home/RecordDatabase";
+        }
         
     </script>
 </head>
@@ -143,7 +148,10 @@
         <br>
         &nbsp;&nbsp;Eğer konuşmalarınız 25 kelimeden az ise konu belirleme ve duygu tahmini yapılamaz.</p>
         <br>
-        <button style="margin-left: 43%;" onclick="startRecording()" id="Başla">Başla</button>
+        <div style="display: flex;padding-left: 33%;">
+            <button onclick="startRecording()" id="Başla">Başla</button>
+            <button style="margin-left: 8%;" onclick="secondPage()" id="Kayıt">Ses Kaydet</button>
+        </div>
         <br>
         <img id="histogram" style="display: none; width: 100%;">
         <br>

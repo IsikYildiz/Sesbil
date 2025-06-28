@@ -1,0 +1,150 @@
+@{
+    ViewData["Title"] = "Add Voice Page";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ses Ekleme Ekranı</title>
+    <style>
+        p{
+            font-size: 20px;
+            border: 3px solid rgb(0, 0, 0);
+            border-radius: 10px;
+            background-color: rgb(183, 173, 173);
+            padding:10px;
+        }
+        label{
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        button{
+            transform: skew(-15deg);
+            border:2px solid rgb(35, 34, 48);
+            background-color: rgb(28, 161, 161);
+            box-shadow: 2px 2px 4px black;
+            width: 180px;
+            height: 40px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        button:hover{
+            transform: scale(1.2,1.2);
+        }
+
+        button:focus{
+            background-color:rgb(91, 203, 203);
+        }
+
+        .textfield{
+            border:2px solid rgb(35, 34, 48);
+            background-color: rgb(183, 173, 173);
+            font-size: 20px;
+            padding: 5px;
+        }
+    </style>
+    <script>
+        var socket;
+        var warningLabel;
+        var currentButtons;
+        var name;
+        window.onload = function () {
+            warningLabel = document.getElementById("Uyarı");
+            currentButtons=document.getElementsByTagName("button");
+            
+            socket=new WebSocket("ws://127.0.0.1:8000/name");
+        };
+
+        async function checkName(){
+            name = document.getElementById("Isim").value;
+            if (!name) {
+                warningLabel.innerText="Lütfen bir isim giriniz!";
+                warningLabel.style.display="block";
+                return;
+            }
+            
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(name);
+            }
+
+            socket.onmessage = function (event) {
+                if (event.data === "Succes") {
+                    warningLabel.innerText="Başarılı!";
+                    warningLabel.style.display="block";
+                    warningLabel.style.color="green";
+                    document.getElementById("Gönder").remove();
+                    document.getElementById("Başla").style.display="block";
+                    socket.close()
+                } 
+                else {
+                    warningLabel.style.display="block";
+                    warningLabel.innerText="Bu isim zaten kayıtlıdır!";
+                    warningLabel.style.color="red";
+                }
+            }
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+                warningLabel.style.display="block";
+                warningLabel.innerText="Bağlantı hatası!";
+            };
+
+            socket.onclose = function () {
+                console.log("WebSocket kapandı.");
+            };
+        }
+
+        async function startRecordingDatabase() {
+            warningLabel.style.display="none";
+            document.getElementById("Durdur").style.display="block";
+            document.getElementById("Başla").style.display="none";
+            document.getElementById("Kılavuz").innerText="Sesiniz şuan kaydediliyor..."
+
+            await fetch('/api/recording/start-database', { method: 'POST' });
+
+            setTimeout(() => stopRecording(), 180000);
+        }
+
+        async function stopRecordingDatabase() {
+            document.getElementById("Kılavuz").style.display="none";
+            currentButtons[0].remove();
+            warningLabel.style.display="visible";
+            warningLabel.innerText="Başarılı!"
+            await fetch("/api/recording/stop-database?name="+name+"", { method: 'POST' });
+            setTimeout(()=> goHomePage(),3000);
+        }
+
+        function goHomePage(){
+            window.location.href="/Home/Record";
+        }
+        
+    </script>
+</head>
+<body>
+    <div class="container">
+        <p id="Kılavuz"><b>Sesi Ekleme:</b>İlk öncelikle bir isim giriniz. Ardından "Başla" tuşuna basıp sesinizi max 3dk kaydedebilirsiniz.
+        Tahminin iyi sonuçlar vermesi için en az 1dk Kayıt önerilir.
+        <br>
+        &nbsp;&nbsp;Ses kaydını durdurmak için durdur tuşuna basın ve sessizce bekleyin. Daha sonra ana sayfadan devam edebilirsiniz.
+        </p>
+        <br>
+        <div style="display:flex;justify-content:center;align-items:center;">
+            <label style="display:none;" id="Uyarı">Bu isim zaten kayıtlıdır!</label>
+        </div>
+        <br>
+        <div style="display:flex;padding-left: 33%;" id="Gönder">
+            <input type="text" id="Isim" placeholder="Bir isim giriniz" class="textfield">
+            <button style="margin-left: 8%;" onclick="checkName()">Gönder</button>
+        </div>
+        <br>
+        <button style="margin-left: 43%;display:none;" onclick="startRecordingDatabase()" id="Başla">Başla</button>
+        <br>
+        <button style="margin-left: 43%;display:none;" onclick="stopRecordingDatabase()" id="Durdur">Durdur</button>
+        <br>
+    </div>
+</body>
+</html>

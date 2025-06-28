@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 
-
-namespace AuidoRecordingAPI.Controllers{
-    [Route ("api/recording")]
+//Bu kotrolcü Python API na ses kaydını, başlatma ve durdurma isteklerini gönderir.
+namespace AuidoRecordingAPI.Controllers
+{
+    [Route("api/recording")]
     [ApiController]
 
-    public class RecordingController : ControllerBase{
+    public class RecordingController : ControllerBase
+    {
         private readonly HttpClient _httpClient;
 
         public RecordingController(HttpClient httpClient)
@@ -13,6 +15,7 @@ namespace AuidoRecordingAPI.Controllers{
             _httpClient = httpClient;
         }
 
+        //Ses kaydını başlatan çağrı
         [HttpPost("start")]
         public async Task<IActionResult> StartRecording()
         {
@@ -20,6 +23,7 @@ namespace AuidoRecordingAPI.Controllers{
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
 
+        //Ses kaydını durduran çağrı
         [HttpPost("stop")]
         public async Task<IActionResult> StopRecording()
         {
@@ -27,16 +31,20 @@ namespace AuidoRecordingAPI.Controllers{
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
 
-        [HttpGet("information")]
-        public async Task<IActionResult> GetInformation()
+        //Veritabanı için ses kaydını başlatır
+        [HttpPost("start-database")]
+        public async Task<IActionResult> StartRecordingForDatabase()
         {
-            var response = await _httpClient.GetAsync("http://127.0.0.1:8000/get-information");
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                return Ok(data);
-            }
+            var response = await _httpClient.PostAsync("http://127.0.0.1:8000/start-recording-database", null);
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
-    } 
+
+        //Veritabanı için ses kaydını durdurur
+        [HttpPost("stop-database")]
+        public async Task<IActionResult> StopRecordingForDatabase(string name)
+        {
+            var response = await _httpClient.PostAsync("http://127.0.0.1:8000/stop-recording-database?name="+name+"", null);
+            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+        }
+    }
 }

@@ -1,18 +1,16 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Sesbil.Models;
 
 namespace Sesbil.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Record(){
+    public IActionResult Record()
+    {
         return View();
     }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    
+    public IActionResult RecordDatabase()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View("RecordDatabase");
     }
 }
