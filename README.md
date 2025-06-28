@@ -29,7 +29,6 @@
 - **Google API'leri:**
   - Speech-to-Text
   - Cloud Natural Language
-  - Translation API
 - **Makine Öğrenimi** (konuşmacı tanıma)
 - **MySQL Veritabanı** (sadece ses dosya yollarını tutar)
 
@@ -59,7 +58,6 @@
 - **Google APIs:**
   - Speech-to-Text
   - Cloud Natural Language
-  - Translation API
 - **Machine Learning** (for speaker recognition)
 - **MySQL Database** (stores only file paths of the recordings)
 
