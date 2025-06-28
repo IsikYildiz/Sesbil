@@ -10,6 +10,7 @@
 ### Proje Özeti
 
 **Sesbil**, web tabanlı bir ses analiz yazılımıdır. Eğer kullanıcının veritabanında bir ses kaydı varsa, tek yapması gereken web sitesinde "Başlat" tuşuna basıp konuşmaya başlamaktır. Kayıt süresi 3 dakika ile sınırlıdır veya kullanıcı "Durdur" tuşuna basana kadar devam eder.
+Aynı zamanda kullanıcılar "Ses Kaydet" sayfasından, isimlerini girip seslerini kadedebilirler. Böylece ses tahmini için kullanılan model güncellenmiş olur.
 
 **Konuşma sırasında:**
 - Gerçek zamanlı **spektrogram** ve **dalga formu grafikleri** gösterilir.
@@ -39,6 +40,7 @@
 ### Project Overview
 
 **Sesbil** is a web-based voice analysis software. If the user has a voice record in the database, they simply click the **Start** button on the website and begin speaking. The recording continues for up to 3 minutes or until the **Stop** button is pressed.
+Users can also record their voice by entering their name on the "Record Voice" page. This will update the model used for voice prediction.
 
 **During speech:**
 - **Real-time spectrogram** and **waveform** graphs are displayed.
