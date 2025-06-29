@@ -22,6 +22,7 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from pymongo import MongoClient
 from CreateModel import deploy_model
+import sys
 
 app = FastAPI()
 
@@ -79,10 +80,14 @@ def record_audio_for_database():
     stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
 
     try:
+        start=time.time()
         while is_recording:
             data = stream.read(CHUNK, exception_on_overflow=False)
             frame = np.frombuffer(data, dtype=np.int16)
             audio_data.extend(frame)
+            if time.time()-start>10:
+                print(len(audio_data)/RATE)
+                start=time.time()
     finally:
         stream.stop_stream()
         stream.close()
@@ -181,7 +186,16 @@ async def checkName(websocket: WebSocket):
         mongo_client.close()
         clients.remove(websocket)
 
-
+@app.post("/reset")
+async def reset_state():
+    global is_recording, audio_data, current_audio_data, send_name_prediction, speakers
+    is_recording = False
+    audio_data.clear()
+    current_audio_data.clear()
+    send_name_prediction = False
+    speakers={}
+    stop_event.set()
+    return {"message": "Durum sıfırlandı."}
 
 #Websocket bağlantısı ile frontend e gerekli bilgiler gönderilir
 @app.websocket("/information")

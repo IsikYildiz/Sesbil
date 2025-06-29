@@ -49,6 +49,10 @@
 
         let socket;
 
+        window.onload = async function () {
+            await fetch('/api/recording/reset', { method: 'POST' });
+        };
+
         async function startRecording() {
             if (socket && socket.readyState === WebSocket.OPEN) {
                 console.warn("WebSocket already open.");

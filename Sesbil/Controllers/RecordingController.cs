@@ -43,7 +43,14 @@ namespace AuidoRecordingAPI.Controllers
         [HttpPost("stop-database")]
         public async Task<IActionResult> StopRecordingForDatabase(string name)
         {
-            var response = await _httpClient.PostAsync("http://127.0.0.1:8000/stop-recording-database?name="+name+"", null);
+            var response = await _httpClient.PostAsync("http://127.0.0.1:8000/stop-recording-database?name=" + name + "", null);
+            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+        }
+
+        [HttpPost("reset")]
+        public async Task<IActionResult> reset()
+        {
+            var response = await _httpClient.PostAsync("http://127.0.0.1:8000/reset", null);
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
     }
