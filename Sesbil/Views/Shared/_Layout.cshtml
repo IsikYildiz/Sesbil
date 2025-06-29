@@ -7,15 +7,40 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Sesbil.styles.css" asp-append-version="true" />
+    <style>
+        .overlap{
+            z-index: -1;
+            opacity: 0.9;
+            width: 100%;
+            height: 160px;
+            filter:blur(2px);
+            position: absolute;
+        }
+        .layered {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 160px;
+        }
+        .name{
+            text-shadow: 2px 0 white, -2px 0 white, 0 2px white, 0 -2px white;
+            font-size: 88px;
+            font-style: italic;
+            margin-left: 28px;
+        }   
+    </style>
 </head>
 <body style="background-color:rgb(43, 172, 201)">
     <header>
         <div class="layered">
-            <h1 class="name"> <img src="/css/Speaking.png" alt="resim bulunamadı" height="130px" width="160px"> Sesbil</h1>
-            <img src="/css/SoundWawes.jpg" alt="Resim Bulunamadı!" class="overlap">
+            <div class="layered" style="padding-top: 20px;">
+                <img src="/images/Speaking.png" alt="resim bulunamadı" height="150px" width="220px">
+                <h1 class="name"> Sesbil</h1>
+            </div>
+            <img src="/images/SoundWawes.jpg" alt="Resim Bulunamadı!" class="overlap">
         </div>
     </header>
-    <div class="container">
+    <div style="margin-top: 40px;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

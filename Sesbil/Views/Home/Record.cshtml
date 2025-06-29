@@ -7,35 +7,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ekranı</title>
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/elements.css">
     <style>
-        p{
-            font-size: 20px;
-            border: 3px solid rgb(0, 0, 0);
-            border-radius: 10px;
-            background-color: rgb(183, 173, 173);
-            padding:10px;
-        }
-
-        button{
-            transform: skew(-15deg);
-            border:2px solid rgb(35, 34, 48);
-            background-color: rgb(28, 161, 161);
-            box-shadow: 2px 2px 4px black;
-            width: 180px;
-            height: 40px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        button:hover{
-            transform: scale(1.2,1.2);
-        }
-
-        button:focus{
-            background-color:rgb(91, 203, 203);
-        }
-
         .histogram{
             height: 400px; 
             border: 2px solid black;
@@ -148,9 +122,7 @@
         Maksimum 3dk konuşabilirsiniz. Konuştuğunuz süre boyunca kimin konuştuğu tahmin edilecektir.
         <br>
         &nbsp;&nbsp;Ses kaydını durdurmak için durdur tuşuna basın ve sessizce bekleyin. 
-        Konuşmanız metne dönüştürülecek, konuşmanın konusu bulunacak ve duygu tahmini yapılacaktır.
-        <br>
-        &nbsp;&nbsp;Eğer konuşmalarınız 25 kelimeden az ise konu belirleme ve duygu tahmini yapılamaz.</p>
+        Konuşmanız metne dönüştürülecek, konuşmanın konusu bulunacak ve duygu tahmini yapılacaktır. Eğer konuşmalarınız 25 kelimeden az ise konu belirleme ve duygu tahmini yapılamaz.</p>
         <br>
         <div style="display: flex;padding-left: 33%;">
             <button onclick="startRecording()" id="Başla">Başla</button>
