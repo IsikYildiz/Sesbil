@@ -1,0 +1,22 @@
+.overlap{
+    z-index: -1;
+    opacity: 0.9;
+    width: 100%;
+    height: 160px;
+    filter:blur(2px);
+    position: absolute;
+}
+
+.layered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+}
+
+.name{
+    text-shadow: 2px 0 white, -2px 0 white, 0 2px white, 0 -2px white;
+    font-size: 88px;
+    font-style: italic;
+    margin-left: 28px;
+}   

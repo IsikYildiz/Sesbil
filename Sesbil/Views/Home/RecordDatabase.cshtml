@@ -81,7 +81,7 @@
 
             await fetch('/api/recording/start-database', { method: 'POST' });
 
-            setTimeout(() => stopRecording(), 180000);
+            setTimeout(() => stopRecordingDatabase(), 180000);
         }
 
         async function stopRecordingDatabase() {

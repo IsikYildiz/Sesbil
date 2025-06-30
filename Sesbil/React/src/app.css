@@ -1,0 +1,9 @@
+.main-content {
+  display: flex;
+  flex-direction: column; /* Öğeleri dikey olarak (alt alta) hizalar */
+  align-items: center;   /* Öğeleri yatayda ortalar (çünkü yön dikey) */
+  justify-content: center; /* Öğeleri dikeyde ortalar (isteğe bağlı) */
+  width: 100%;
+  padding: 20px; /* Kenarlardan biraz boşluk bırakmak için */
+  box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
+}
