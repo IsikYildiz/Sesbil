@@ -25,20 +25,24 @@ function ControlButtons({ onStart, onStop}){
     if (state===0){
         content=(
             <>
-            <button onClick={startRecord} style={{ marginLeft: "22%" }} id="Başla">Başla</button>
-            <button onClick={onSecondPage} style={{ marginLeft: "8%" }} id="Kaydet">Ses Kaydet</button>
+            <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "20px", width:"800px"}} className="appear">
+            <button onClick={startRecord} style={{ marginRight:"20px", marginTop:"40px" }} id="Başla">Başla</button>
+            <button onClick={onSecondPage} style={{ marginTop:"40px" }} id="Kaydet">Ses Kaydet</button>
+            </div>
             </>
         )
     }
     else if (state===1){
-        content=<button onClick={stopRecord} style={{ marginLeft: "38%" }} id="Durdur">Durdur</button>
+        content=(
+            <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "20px", width:"1000px"}} className="appear">
+                <button onClick={stopRecord} style={{marginTop:"30px"}} id="Durdur">Durdur</button>
+            </div>
+        )
     }
 
     return(
         <>
-        <div style={{ display: "flex", ustifyContent: "center", gap: "20px" }}>
-            {content}
-        </div>
+        {content}
         </>
     )
 }

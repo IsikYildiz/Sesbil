@@ -4,6 +4,7 @@ import Instructions from '../shared/Instructions.jsx'
 import Results from './components/Results.jsx'
 import Histogram from './components/Histogram.jsx'
 import ControlButtons from './components/ControlButtons.jsx'
+import Speaking from '../shared/Speaking.png'
 import React, { useRef, useState, useEffect } from 'react'
 
 function Record(){
@@ -20,6 +21,8 @@ function Record(){
 
     const [instructionsVisibility, setInstructionsVisibility] = useState(false)
 
+    const [speakingVisibility, setSpeakingVisiblity] = useState(true)
+
     useEffect(() => {
         // ilk yüklendiğinde reset at
         fetch('http://localhost:5020/api/recording/reset', { method: 'POST' });
@@ -30,6 +33,8 @@ function Record(){
             console.warn("WebSocket already open.");
             return;
         }
+
+        setSpeakingVisiblity(prev => !prev)
 
         await fetch('http://localhost:5020/api/recording/start', { method: 'POST' });
 
@@ -44,6 +49,7 @@ function Record(){
             if (typeof message === "string") {
                 if (message.includes("ilk mesaj")) {
                     setData(prev => ({ ...prev, metin: message.substring("İlk mesaj".length) }));
+                    setHistogram(null);
                 } else if (message.includes("ikinci mesaj")) {
                     setData(prev => ({ ...prev, konu: message.substring("ikinci mesaj".length) }));
                 } else if (message.includes("üçüncü mesaj")) {
@@ -73,9 +79,16 @@ function Record(){
         await fetch('http://localhost:5020/api/recording/stop', { method: 'POST' });
     }
 
+    let speakingImg;
+    if (speakingVisibility){
+        speakingImg=<img src={Speaking} style={{width:"280px", height:"240px", marginRight:"100px", marginTop:"50px", display:{speakingVisibility}}} className="appear"/>
+    }
+
     return(
         <>
-        <div style={{width:"800px"}}>
+        <div style={{display:"flex", justifyContent: "center", width: "100%"}}>
+            {speakingImg}          
+            <div style={{width:"1000px"}}>
             <Instructions text="Tek yapmanız gereken başla tuşuna basıp konuşmaktır. 
             Maksimum 3dk konuşabilirsiniz, konuştuğunuz süre boyunca kimin konuştuğu tahmin edilecektir.
             Ses kaydını durdurmak için durdur tuşuna basıp sessizce bekleyin. 
@@ -83,9 +96,10 @@ function Record(){
             Eğer konuşmalarınız 25 kelimeden az ise konu belirleme ve duygu tahmini yapılamaz."
             header="Nasıl Kullanılır"
             hidden={instructionsVisibility} />
-            <Histogram imgData={histogram} />
+            <Histogram imgData={histogram} className="appear"/>
             <ControlButtons onStart={startRecording} onStop={stopRecording} />
-            <Results data={data} />
+            <Results data={data} className="appear" style={{marginTop:"59px"}}/>
+            </div>
         </div>
         </>
     )

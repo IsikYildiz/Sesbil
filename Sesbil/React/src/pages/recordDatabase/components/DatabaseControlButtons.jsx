@@ -29,7 +29,7 @@ function ControlButtons({ onStart, onStop, hidden}){
 
     return(
         <>
-        <div style={{ display: "flex", ustifyContent: "center", gap: "20px", margin:"10px" }}>
+        <div style={{ display: "flex", ustifyContent: "center", gap: "20px", margin:"10px" }} className="appear">
             {content}
         </div>
         </>

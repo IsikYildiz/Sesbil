@@ -286,23 +286,38 @@ def create_histogram():
     
     #Spektogram oluşturma
     frequencies, times, Sxx = spectrogram(audio_datanp, fs=RATE)
-    plt.figure(figsize=(10, 5), facecolor=(0.1686, 0.6745, 0.7882))
+    plt.figure(figsize=(10, 5), facecolor="#0E0E0E")
 
     #Dalga Formu
-    plt.subplot(2, 1, 1)
+    ax1 = plt.subplot(2, 1, 1)
     time_axis = np.arange(0, len(audio_datanp)) / RATE
-    plt.plot(time_axis, audio_datanp, color='blue')
-    plt.title("Dalga Formu")
-    plt.xlabel("Zaman (s)")
-    plt.ylabel("Amplitüd")
+    ax1.plot(time_axis, audio_datanp, color="#16B379")
+    ax1.set_facecolor(color="#0E0E0E")
+    ax1.set_title("Dalga Formu", color='white')
+    ax1.set_xlabel("Zaman (s)", color='white')
+    ax1.set_ylabel("Amplitüd", color='white')
+    ax1.tick_params(colors='white')
+    ax1.spines['bottom'].set_color('white')
+    ax1.spines['top'].set_color('white')
+    ax1.spines['left'].set_color('white')
+    ax1.spines['right'].set_color('white')
 
-    #spektogram tanımlama
-    plt.subplot(2, 1, 2)
+    # Spektogram
+    ax2 = plt.subplot(2, 1, 2)
     Sxx[Sxx == 0] = 1e-10
-    plt.pcolormesh(times, frequencies, 10 * np.log10(Sxx), shading='gouraud', cmap='viridis')
-    plt.colorbar(label="Güç (dB)")
-    plt.xlabel("Zaman (s)")
-    plt.ylabel("Frekans (Hz)")
+    pcm = ax2.pcolormesh(times, frequencies, 10 * np.log10(Sxx), shading='gouraud', cmap='viridis')
+    cbar = plt.colorbar(pcm, label="Güç (dB)")
+    cbar.ax.yaxis.label.set_color('white')      
+    cbar.ax.tick_params(colors='white')  
+    ax2.set_xlabel("Zaman (s)", color='white')
+    ax2.set_ylabel("Frekans (Hz)", color='white')
+    ax2.tick_params(colors='white')
+    ax2.set_facecolor(color="#0E0E0E")
+    ax2.spines['bottom'].set_color('white')
+    ax2.spines['top'].set_color('white')
+    ax2.spines['left'].set_color('white')
+    ax2.spines['right'].set_color('white')
+
     plt.tight_layout()
 
     #Oluşturulan grafikler gönderilir

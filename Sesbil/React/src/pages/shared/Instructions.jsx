@@ -10,10 +10,10 @@ function Instructions({text,header,hidden}) {
     if (!hidden){
         content= 
         <>
-        <div style={{alignItems:"center", justifyContent:"center"}}>
+        <div style={{alignItems:"center", justifyContent:"center"}} className="appear">
             <p>
-                {head}
-                &nbsp;{text}
+                <b style={{color:"#6a78e2"}}>{head}</b>
+                {text}
             </p>
         </div>
         </>
