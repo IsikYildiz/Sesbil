@@ -24,14 +24,15 @@ Aynı zamanda kullanıcılar "Ses Kaydet" sayfasından, isimlerini girip sesleri
 ### Kullanılan Teknolojiler
 
 - **Visual Studio Code** (geliştirme ortamı, Mac uyumu)
-- **.NET Core** (frontend)
-- **Python** (backend, `matplotlib` vb. kütüphaneler)
+- **React (frontend)**
+- **.NET Core** (backend)
+- **Python** (Fastapi ile yazılmış Api, `matplotlib` vb. kütüphaneler)
 - **WebSocket** (gerçek zamanlı ön-arka yüz veri iletimi)
 - **Google API'leri:**
   - Speech-to-Text
   - Cloud Natural Language
 - **Makine Öğrenimi** (konuşmacı tanıma)
-- **MySQL Veritabanı** (sadece ses dosya yollarını tutar)
+- **MongoDB Veritabanı** (sadece ses dosya yollarını tutar)
 
 ---
 
@@ -54,13 +55,14 @@ Users can also record their voice by entering their name on the "Record Voice" p
 ### Technologies Used
 
 - **Visual Studio Code** (cross-platform, Mac compatible)
-- **.NET Core** (frontend)
-- **Python** (backend with libraries like `matplotlib`)
+- **React (frontend)**
+- **.NET Core** (backend)
+- **Python** (Api with libraries like `matplotlib`, made with Fastapi)
 - **WebSockets** (real-time communication between frontend and backend)
 - **Google APIs:**
   - Speech-to-Text
   - Cloud Natural Language
 - **Machine Learning** (for speaker recognition)
-- **MySQL Database** (stores only file paths of the recordings)
+- **MongoDB Database** (stores only file paths of the recordings)
 
 ---
