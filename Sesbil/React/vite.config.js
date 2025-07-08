@@ -9,4 +9,8 @@ export default defineConfig({
     outDir: '../wwwroot/react',
     emptyOutDir: true,
   },
+  test: {
+    globals: true,
+    environment: 'jsdom'
+  }
 })
