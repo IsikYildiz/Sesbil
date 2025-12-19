@@ -5,7 +5,7 @@
 
 ---
 
-## 🇹🇷 Türkçe Açıklama
+## Türkçe Açıklama
 
 ### Proje Özeti
 
@@ -36,7 +36,7 @@ Aynı zamanda kullanıcılar "Ses Kaydet" sayfasından, isimlerini girip sesleri
 
 ---
 
-## 🇬🇧 English Description
+## English Description
 
 ### Project Overview
 
